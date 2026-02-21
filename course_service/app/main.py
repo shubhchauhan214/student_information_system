@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .database import Base, engine
+from . import models
 from .routers import course
 
 Base.metadata.create_all(bind=engine)

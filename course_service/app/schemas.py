@@ -1,12 +1,13 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class CourseCreate(BaseModel):
     name: str
     duration: str
 
 class CourseUpdate(BaseModel):
-    name: str
-    duration: str
+    name: Optional[str]=None
+    duration: Optional[str]=None
 
 class CourseResponse(BaseModel):
     id: int

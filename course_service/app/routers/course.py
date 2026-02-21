@@ -7,7 +7,11 @@ router = APIRouter(prefix="/course", tags=["Courses"])
 
 @router.post("/", response_model = schemas.CourseResponse)
 def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
-    return crud.create_course(db, course.name, course.duration)
+    new_course=crud.create_course(db, course)
+
+    if not new_course:
+        return HTTPException(status_code=404, detail="Course not found.")
+    
 
 @router.get("/", response_model=list[schemas.CourseResponse])
 def read_courses(db: Session=Depends(get_db)):
@@ -23,15 +27,15 @@ def read_course(course_id: int, db: Session=Depends(get_db)):
 
 @router.put("/{course_id}", response_model=schemas.CourseResponse)
 def update_course(course_id: int, course:schemas.CourseUpdate, db: Session=Depends(get_db)):
-    updated_course = crud.update_course(db, course_id, course.name, course.duration)
+    updated_course = crud.update_course(db, course_id, course)
     if not updated_course:
         raise HTTPException(status_code=404, detail="Course not found")
     return updated_course
 
-@router.delete("/{course_id}", response_model=schemas.CourseResponse)
+@router.delete("/{course_id}")
 def delete_course(course_id: int, db: Session=Depends(get_db)):
     deleted_course=crud.delete_course(db, course_id)
     if not deleted_course:
         raise HTTPException(status_code=404, detail="Course not found")
-    return deleted_course
+    return {"message": "Deleted successfully"}
 
