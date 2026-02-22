@@ -5,12 +5,17 @@ from app import crud, schemas
 
 router = APIRouter(prefix="/course", tags=["Courses"])
 
-@router.post("/", response_model = schemas.CourseResponse)
+@router.post("/", response_model=schemas.CourseResponse)
 def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
-    new_course=crud.create_course(db, course)
+    try:
+        new_course = crud.create_course(db, course)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     if not new_course:
-        return HTTPException(status_code=404, detail="Course not found.")
+        raise HTTPException(status_code=404, detail="Course not found.")
+    
+    return new_course
     
 
 @router.get("/", response_model=list[schemas.CourseResponse])

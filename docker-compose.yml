@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+
+  postgres_course:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: course_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  postgres_subject:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: subject_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  postgres_student:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: student_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  course-service:
+    build: ./course_service
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@postgres_course:5432/course_db
+    depends_on:
+      postgres_course:
+        condition: service_healthy
+
+  subject-service:
+    build: ./subject_service
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@postgres_subject:5432/subject_db
+    depends_on:
+      postgres_subject:
+        condition: service_healthy
+
+  student-service:
+    build: ./student_service
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@postgres_student:5432/student_db
+    depends_on:
+      postgres_student:
+        condition: service_healthy

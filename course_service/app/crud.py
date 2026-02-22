@@ -1,12 +1,18 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
+from sqlalchemy.exc import IntegrityError
 
 def create_course(db: Session, course: schemas.CourseCreate):
     db_course = models.Course(**course.dict())
     db.add(db_course)
-    db.commit()
-    db.refresh(db_course)
-    return db_course
+
+    try:
+        db.commit()
+        db.refresh(db_course)
+        return db_course
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("Course with this name already exists")
 
 def get_all_courses(db: Session):
     return db.query(models.Course).all()
