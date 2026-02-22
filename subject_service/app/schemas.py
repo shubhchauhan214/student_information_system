@@ -10,11 +10,15 @@ class SubjectCreate(BaseModel):
 class SubjectUpdate(BaseModel):
     subject_code: Optional[str]=None
     subject_name:Optional[str]=None
-    marks: Optional[str]=None
+    marks: Optional[int]=None
     course_id: Optional[int]=None
 
 class SubjectResponse(BaseModel):
     id: int
+    subject_code: str
+    subject_name: str
+    marks: int
+    course_id: int
 
     class Config:
         from_attributes = True

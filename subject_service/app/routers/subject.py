@@ -5,13 +5,18 @@ from app import crud, schemas
 
 router = APIRouter(prefix="/subjects", tags=["Subjects"])
 
-@router.post("/", response_model = schemas.SubjectResponse)
+@router.post("/", response_model=schemas.SubjectResponse)
 def create_subject(subject: schemas.SubjectCreate, db: Session = Depends(get_db)):
     
-    new_subject =crud.create_subject(db, subject)
+    try:
+        new_subject = crud.create_subject(db, subject)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     if not new_subject:
         raise HTTPException(status_code=400, detail="Invalid course_id")
+    
+    return new_subject
 
 @router.get("/", response_model=list[schemas.SubjectResponse])
 def get_subjects(db: Session=Depends(get_db)):

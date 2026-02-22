@@ -4,7 +4,7 @@ import httpx
 
 def validate_course(course_id:int):
 
-    url =f"http://127.0.0.1:8000/courses/{course_id}"
+    url =f"http://127.0.0.1:8000/course/{course_id}"
 
     try:
         response=httpx.get(url)
@@ -33,7 +33,7 @@ def get_all_subjects(db: Session):
     return db.query(models.Subject).all()
 
 def get_subject_by_id(db: Session, subject_code: str):
-    return db.query(models.Subject).filter(models.subject_code == subject_code).first()
+    return db.query(models.Subject).filter(models.Subject.subject_code == subject_code).first()
 
 def update_subject(db: Session, subject_code: str, subject_update: schemas.SubjectUpdate):
 
